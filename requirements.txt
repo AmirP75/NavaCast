@@ -1,0 +1,5 @@
+flask
+openai-whisper
+imageio-ffmpeg
+numpy<2
+torch==2.1.0+cu118

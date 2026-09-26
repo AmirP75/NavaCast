@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+venv311/
+ENV/
+
+# Flask / uploads (فایل‌های تولیدشده کاربر)
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+launcher.log
+*.log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Model cache (حجیم - دانلود خودکار می‌شود)
+*.pt
