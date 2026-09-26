@@ -306,7 +306,7 @@ if __name__ == '__main__':
 
     device = get_device()
     print(f"Device: {device}", flush=True)
-    print("Starting Speech to Text...", flush=True)
+    print("Starting Audio to SRT Converter...", flush=True)
     cleanup_old_uploads()
     # مدل را در پس‌زمینه لود می‌کنیم تا سرور بلافاصله روی پورت 8000 بالا بیاید
     # و مرورگر معطل نماند. اولین درخواست /upload اگر مدل هنوز لود نشده باشد،

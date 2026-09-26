@@ -1,7 +1,7 @@
 @echo off
 setlocal
 chcp 65001 >nul
-title Speech to Text
+title Audio to SRT Converter
 cd /d "%~dp0"
 
 set "VPY=%~dp0venv311\Scripts\python.exe"
@@ -10,7 +10,7 @@ set "URL=http://127.0.0.1:8000"
 set "HEALTH_URL=http://127.0.0.1:8000/health"
 
 echo ============================================
-echo   Speech to Text - Launcher
+echo   Audio to SRT Converter - Launcher
 echo ============================================
 echo.
 
