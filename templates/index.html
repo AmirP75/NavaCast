@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نواکست — تبدیل هوشمند صوت به زیرنویس SRT</title>
+<title>نواکست — تبدیل هوشمند صوت و ویدیو به زیرنویس SRT</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <style>
 :root{
@@ -135,6 +135,7 @@ nav{position:sticky;top:14px;z-index:20;display:flex;align-items:center;justify-
 .file-card.show{display:block}
 .file-top{display:flex;align-items:center;gap:13px}
 .f-avatar{width:48px;height:48px;border-radius:14px;flex-shrink:0;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#0ea5e9,#7c5cff)}
+.f-avatar.video{background:linear-gradient(135deg,#f43f5e,#7c5cff)}
 .file-meta{flex:1;min-width:0}
 .file-meta b{display:block;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .file-meta small{color:var(--muted);font-size:.76rem}
@@ -142,6 +143,7 @@ nav{position:sticky;top:14px;z-index:20;display:flex;align-items:center;justify-
   cursor:pointer;display:grid;place-items:center;transition:.25s;flex-shrink:0}
 .icon-btn:hover{background:rgba(251,113,133,.14);border-color:rgba(251,113,133,.4);transform:scale(1.05)}
 .file-card audio{width:100%;margin-top:12px;height:38px;border-radius:10px;outline:none;filter:invert(.92) hue-rotate(210deg) saturate(1.4)}
+.file-card video{width:100%;max-height:280px;margin-top:12px;border-radius:12px;background:#000;outline:none;border:1px solid var(--stroke2)}
 .eq{display:flex;align-items:flex-end;gap:3px;height:26px;margin-top:10px;justify-content:center;opacity:.9}
 .eq i{width:4px;border-radius:3px;background:linear-gradient(180deg,var(--cyan),var(--vio));animation:eq 1s ease-in-out infinite}
 .eq i:nth-child(1){height:40%}.eq i:nth-child(2){height:80%;animation-delay:-.2s}.eq i:nth-child(3){height:55%;animation-delay:-.4s}
@@ -158,6 +160,45 @@ nav{position:sticky;top:14px;z-index:20;display:flex;align-items:center;justify-
 .lang-tabs button:hover{color:#fff;background:rgba(255,255,255,.05)}
 .lang-tabs button.on{background:linear-gradient(135deg,var(--vio),#a855f7);color:#fff;box-shadow:0 6px 20px rgba(124,92,255,.4)}
 #language{display:none}
+
+/* output mode */
+.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:rgba(0,0,0,.28);border:1px solid var(--stroke);border-radius:15px;padding:6px}
+.mode-tabs button{border:1px solid transparent;background:transparent;color:var(--muted);font-family:inherit;font-size:.84rem;font-weight:700;
+  padding:11px 12px;border-radius:11px;cursor:pointer;transition:.25s;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:right}
+.mode-tabs button .mt-title{display:flex;align-items:center;gap:6px;color:inherit;font-size:.84rem}
+.mode-tabs button .mt-desc{font-size:.68rem;font-weight:400;color:var(--muted2);line-height:1.7}
+.mode-tabs button:hover{color:#fff;background:rgba(255,255,255,.05)}
+.mode-tabs button.on{background:linear-gradient(135deg,var(--vio),#a855f7);color:#fff;box-shadow:0 6px 20px rgba(124,92,255,.4);border-color:rgba(255,255,255,.12)}
+.mode-tabs button.on .mt-desc{color:rgba(255,255,255,.78)}
+.mode-tabs button.locked{opacity:.5;cursor:not-allowed}
+.mode-tabs button.locked:hover{color:var(--muted);background:transparent}
+.mode-tabs button.locked .mode-badge{opacity:.75}
+.mode-badge{font-size:.58rem;font-weight:800;background:rgba(34,211,238,.18);border:1px solid rgba(34,211,238,.45);color:#67e8f9;padding:2px 6px;border-radius:999px;line-height:1.5}
+.mode-tabs button.on .mode-badge{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.35);color:#fff}
+#modelTabs{grid-template-columns:repeat(3,1fr)}
+@media(max-width:680px){ #modelTabs{grid-template-columns:1fr} }
+@media(max-width:420px){.mode-tabs{grid-template-columns:1fr}}
+
+/* model download */
+.model-download{display:none;margin-top:10px;border:1px solid rgba(124,92,255,.25);border-radius:14px;padding:12px 14px;
+  background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(217,70,239,.07));animation:rise .35s ease}
+.model-download.show{display:block}
+.model-download.error{border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.07)}
+.md-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.md-head b{display:block;font-size:.8rem;color:#ddd6fe}
+.md-head small{display:block;color:var(--muted);font-size:.68rem;line-height:1.8;margin-top:2px;max-width:390px}
+#downloadModelBtn{flex-shrink:0;border:none;cursor:pointer;font-family:inherit;font-size:.75rem;font-weight:800;color:#fff;
+  padding:9px 14px;border-radius:10px;background:linear-gradient(135deg,#7c5cff,#d946ef);box-shadow:0 6px 18px rgba(124,92,255,.35);transition:.25s}
+#downloadModelBtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(124,92,255,.5)}
+#downloadModelBtn:disabled{opacity:.55;cursor:wait;transform:none}
+.md-progress{display:none;margin-top:12px}
+.md-progress.show{display:block}
+.md-bar{height:8px;background:rgba(255,255,255,.08);border:1px solid var(--stroke);border-radius:999px;overflow:hidden}
+#modelProgressFill{height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,var(--vio),var(--fux),var(--cyan));
+  background-size:200% 100%;animation:slide 1.4s linear infinite;transition:width .5s ease;box-shadow:0 0 14px rgba(124,92,255,.5)}
+.model-download.error #modelProgressLabel{color:#fda4af}
+#modelProgressDetail{display:block;color:var(--muted2);font-size:.68rem;margin-top:6px;line-height:1.7}
+@media(max-width:560px){.md-head{flex-direction:column;align-items:flex-start}.md-head #downloadModelBtn{width:100%}}
 
 /* convert btn */
 #uploadBtn{width:100%;margin-top:18px;border:none;cursor:pointer;font-family:inherit;font-size:1rem;font-weight:800;color:#fff;
@@ -219,6 +260,10 @@ nav{position:sticky;top:14px;z-index:20;display:flex;align-items:center;justify-
 #downloadBtn.show{display:flex;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
 @keyframes pop{from{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:none}}
 #downloadBtn:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(16,185,129,.5)}
+#downloadSegmentBtn{width:100%;margin-top:10px;border:1px solid var(--stroke2);cursor:pointer;font-family:inherit;font-size:.86rem;font-weight:700;color:var(--muted);
+  padding:13px;border-radius:14px;background:rgba(255,255,255,.045);display:none;align-items:center;justify-content:center;gap:9px;transition:.3s}
+#downloadSegmentBtn.show{display:flex;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+#downloadSegmentBtn:hover{color:#fff;border-color:var(--vio);background:rgba(124,92,255,.14);transform:translateY(-1px)}
 
 /* tips */
 .tips{display:flex;flex-direction:column;gap:11px;margin-top:6px}
@@ -244,12 +289,12 @@ footer b{color:var(--muted)}
       <div class="logo">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M8 5v14M4 9v6M16 5v14M20 9v6"/></svg>
       </div>
-      <h2>نواکست<small>تبدیل هوشمند صوت به زیرنویس</small></h2>
+      <h2>نواکست<small>تبدیل هوشمند صوت و ویدیو به زیرنویس</small></h2>
     </div>
     <div class="nav-left">
       <span class="pill model">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2-6.3-4.5-6.3 4.5L8 13.8 2 9.2h7.6z"/></svg>
-        Whisper Medium
+        <span id="modelPillTxt">Whisper Medium</span>
       </span>
       <span class="pill hide-m" id="serverPill"><span class="dot"></span> <span id="serverPillTxt">در حال اتصال به سرور…</span></span>
     </div>
@@ -263,8 +308,8 @@ footer b{color:var(--muted)}
     <h1>صوتت را بده، <span class="grad">زیرنویس حرفه‌ای</span> تحویل بگیر</h1>
     <p>فایل صوتی یا ویدیویی خود را رها کنید؛ هوش مصنوعی با دقت بالا گفتار را رونویسی کرده و فایل SRT آماده‌ی انتشار تحویل می‌دهد.</p>
     <div class="hero-stats">
-      <div class="hstat"><span class="ic">🎯</span><span><b>دقت بالا</b> &nbsp;مدل Medium</span></div>
-      <div class="hstat"><span class="ic">📁</span><span><b>۹ فرمت</b> &nbsp;صوتی و ویدیویی</span></div>
+      <div class="hstat"><span class="ic">🎯</span><span><b>دقت بالا</b> &nbsp;Medium، High و Persian</span></div>
+      <div class="hstat"><span class="ic">📁</span><span><b>۱۵+ فرمت</b> &nbsp;صوتی و ویدیویی</span></div>
       <div class="hstat"><span class="ic">🔒</span><span><b>حریم خصوصی</b> &nbsp;بدون ارسال به ابر</span></div>
     </div>
   </section>
@@ -278,23 +323,24 @@ footer b{color:var(--muted)}
   <div class="grid">
     <!-- converter -->
     <div class="card">
-      <h3><span class="step-ic">⬆</span> آپلود فایل صوتی</h3>
-      <p class="desc">فایل را بکشید و رها کنید یا کلیک کنید. حداکثر حجم ۵۰۰ مگابایت.</p>
+      <h3><span class="step-ic">⬆</span> آپلود فایل صوتی یا ویدیویی</h3>
+      <p class="desc">فایل را بکشید و رها کنید یا کلیک کنید. برای ویدیو، صدا به‌صورت خودکار استخراج می‌شود. حداکثر حجم ۵۰۰ مگابایت.</p>
 
       <div id="uploadZone">
         <div class="drop-ic">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </div>
         <h4>فایل را اینجا <span>رها کنید</span> یا کلیک کنید</h4>
-        <p class="sub">پیش‌نمایش پخش صوت بلافاصله نمایش داده می‌شود</p>
-        <div class="formats"><span>MP3</span><span>WAV</span><span>M4A</span><span>OGG</span><span>FLAC</span><span>WEBM</span><span>MP4</span><span>AAC</span><span>WMA</span></div>
-        <input type="file" id="fileInput" accept="audio/*,video/mp4,.mp3,.wav,.m4a,.ogg,.flac,.webm,.mp4,.aac,.wma">
+        <p class="sub">پیش‌نمایش صوت یا ویدیو بلافاصله نمایش داده می‌شود</p>
+        <div class="formats"><span>MP3</span><span>WAV</span><span>M4A</span><span>OGG</span><span>FLAC</span><span>AAC</span><span>WMA</span><span>OPUS</span><span>MP4</span><span>MKV</span><span>MOV</span><span>WEBM</span><span>AVI</span><span>MPEG</span><span>M4V</span></div>
+        <input type="file" id="fileInput" accept="audio/*,video/*,.mp3,.wav,.m4a,.ogg,.oga,.flac,.aac,.wma,.opus,.aif,.aiff,.mp4,.m4v,.mkv,.mov,.webm,.avi,.mpg,.mpeg,.m2ts,.ts,.3gp,.flv">
       </div>
 
       <div class="file-card" id="fileCard">
         <div class="file-top">
-          <div class="f-avatar">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          <div class="f-avatar" id="fileAvatar">
+            <svg id="audioIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            <svg id="videoIcon" class="hidden" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="3"/><path d="M16 10l6-3v10l-6-3"/></svg>
           </div>
           <div class="file-meta"><b id="fileNameLabel">—</b><small id="fileSizeLabel">—</small></div>
           <button class="icon-btn" id="removeFile" title="حذف فایل">
@@ -302,6 +348,7 @@ footer b{color:var(--muted)}
           </button>
         </div>
         <audio id="audioPrev" controls></audio>
+        <video id="videoPrev" controls playsinline class="hidden"></video>
         <div class="eq paused" id="eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
       <p id="fileName" style="display:none"></p>
@@ -321,9 +368,59 @@ footer b{color:var(--muted)}
         <option value="en">English</option>
       </select>
 
+      <div class="lang-label">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
+        مدل رونویسی
+      </div>
+      <div class="mode-tabs" id="modelTabs">
+        <button type="button" data-model="medium" class="on">
+          <span class="mt-title">⚡ Medium</span>
+          <span class="mt-desc" id="mediumModelStatus">نصب‌شده • سریع و متعادل</span>
+        </button>
+        <button type="button" data-model="large-v3" class="locked">
+          <span class="mt-title">🏆 High <span class="mode-badge">Large v3</span></span>
+          <span class="mt-desc" id="highModelStatus">دانلود نشده • حدود ۳ گیگابایت</span>
+        </button>
+        <button type="button" data-model="persian" class="locked">
+          <span class="mt-title">🇮🇷 Persian <span class="mode-badge">فارسی</span></span>
+          <span class="mt-desc" id="persianModelStatus">دانلود نشده • حدود ۳ گیگابایت</span>
+        </button>
+      </div>
+
+      <div class="model-download" id="modelDownloadBox">
+        <div class="md-head">
+          <div>
+            <b id="modelDownloadTitle">مدل High نصب نیست</b>
+            <small id="modelDownloadDesc">برای بالاترین دقت، مدل High را دانلود کنید. دانلود توسط خود برنامه انجام می‌شود و فقط یک‌بار لازم است.</small>
+          </div>
+          <button type="button" id="downloadModelBtn">⬇ دانلود High</button>
+        </div>
+        <div class="md-progress" id="modelProgressWrap">
+          <div class="prog-head"><span id="modelProgressLabel">در حال دانلود مدل High…</span><b id="modelProgressPct">۰٪</b></div>
+          <div class="md-bar"><div id="modelProgressFill"></div></div>
+          <small id="modelProgressDetail"></small>
+        </div>
+      </div>
+
+      <div class="lang-label">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+        حالت خروجی زیرنویس
+      </div>
+      <div class="mode-tabs" id="modeTabs">
+        <button type="button" data-value="segment" class="on">
+          <span class="mt-title">🗣️ جمله‌ای</span>
+          <span class="mt-desc">SRT استاندارد برای پخش و انتشار</span>
+        </button>
+        <button type="button" data-value="word">
+          <span class="mt-title">✂️ کلمه به کلمه <span class="mode-badge">برای ادیت</span></span>
+          <span class="mt-desc">زمان‌بندی دقیق هر کلمه، جدا از هم</span>
+        </button>
+      </div>
+      <input type="hidden" id="outputMode" value="segment">
+
       <button id="uploadBtn" disabled>
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
-        شروع تبدیل به SRT
+        <span id="uploadBtnLabel">شروع تبدیل به SRT</span>
       </button>
 
       <div class="progress-wrap" id="progressWrap">
@@ -347,18 +444,22 @@ footer b{color:var(--muted)}
         <div id="resultInfo">
           <div class="stat-row">
             <div class="stat g"><div class="v" id="detectedLang">—</div><div class="k">زبان تشخیص‌داده‌شده</div></div>
-            <div class="stat v"><div class="v" id="segmentsCount">—</div><div class="k">تعداد بخش‌ها</div></div>
+            <div class="stat v"><div class="v" id="segmentsCount">—</div><div class="k" id="countLabel">تعداد بخش‌ها</div></div>
           </div>
         </div>
 
         <div class="term" id="termBox">
-          <div class="term-bar"><i></i><i></i><i></i><span>preview.srt</span><button class="copy-btn" id="copyBtn">کپی</button></div>
+          <div class="term-bar"><i></i><i></i><i></i><span id="previewFilename">preview.srt</span><button class="copy-btn" id="copyBtn">کپی</button></div>
           <div id="preview"><pre id="previewText"></pre></div>
         </div>
 
         <button id="downloadBtn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          دانلود فایل SRT
+          <span id="downloadLabel">دانلود فایل SRT</span>
+        </button>
+        <button id="downloadSegmentBtn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          دانلود نسخه جمله‌ای (SRT عادی)
         </button>
       </div>
 
@@ -367,13 +468,14 @@ footer b{color:var(--muted)}
         <div class="tips">
           <div class="tip"><span class="tk">🎙️</span><span>کیفیت صدای شفاف و بدون نویز، دقت رونویسی را تا حد زیادی بالا می‌برد.</span></div>
           <div class="tip"><span class="tk">🌍</span><span>اگر زبان فایل مشخص است، آن را دستی انتخاب کنید تا سرعت و دقت بیشتر شود.</span></div>
+          <div class="tip"><span class="tk">✂️</span><span>حالت «کلمه به کلمه» زمان‌بندی تک‌تک کلمات را می‌دهد؛ مناسب ادیت دقیق، اما کمی کندتر است.</span></div>
           <div class="tip"><span class="tk">⏳</span><span>فایل‌های طولانی چند دقیقه زمان می‌برند؛ لطفاً صفحه را نبندید.</span></div>
         </div>
       </div>
     </div>
   </div>
 
-  <footer>ساخته‌شده با <b>Whisper Medium</b> • پردازش محلی، امن و بدون محدودیت • <b>نواکست</b> © ۱۴۰۵</footer>
+  <footer>ساخته‌شده با <b>Whisper Medium / High / Persian</b> • پردازش محلی، امن و بدون محدودیت • <b>نواکست</b> © ۱۴۰۵</footer>
 </div>
 
 <script>
@@ -383,9 +485,14 @@ fileName=document.getElementById('fileName'),
 fileNameLabel=document.getElementById('fileNameLabel'),
 fileSizeLabel=document.getElementById('fileSizeLabel'),
 fileCard=document.getElementById('fileCard'),
+fileAvatar=document.getElementById('fileAvatar'),
+audioIcon=document.getElementById('audioIcon'),
+videoIcon=document.getElementById('videoIcon'),
 audioPrev=document.getElementById('audioPrev'),
+videoPrev=document.getElementById('videoPrev'),
 eq=document.getElementById('eq'),
 uploadBtn=document.getElementById('uploadBtn'),
+uploadBtnLabel=document.getElementById('uploadBtnLabel'),
 progressWrap=document.getElementById('progressWrap'),
 progressFill=document.getElementById('progressFill'),
 progPct=document.getElementById('progPct'),
@@ -394,22 +501,254 @@ status=document.getElementById('status'),
 resultInfo=document.getElementById('resultInfo'),
 preview=document.getElementById('preview'),
 previewText=document.getElementById('previewText'),
+previewFilename=document.getElementById('previewFilename'),
 termBox=document.getElementById('termBox'),
 downloadBtn=document.getElementById('downloadBtn'),
+downloadLabel=document.getElementById('downloadLabel'),
+downloadSegmentBtn=document.getElementById('downloadSegmentBtn'),
 language=document.getElementById('language'),
 emptyState=document.getElementById('emptyState'),
 langTabs=document.getElementById('langTabs'),
+modeTabs=document.getElementById('modeTabs'),
+modelTabs=document.getElementById('modelTabs'),
+modelDownloadBox=document.getElementById('modelDownloadBox'),
+downloadModelBtn=document.getElementById('downloadModelBtn'),
+modelProgressWrap=document.getElementById('modelProgressWrap'),
+modelProgressLabel=document.getElementById('modelProgressLabel'),
+modelProgressPct=document.getElementById('modelProgressPct'),
+modelProgressFill=document.getElementById('modelProgressFill'),
+modelProgressDetail=document.getElementById('modelProgressDetail'),
+mediumModelStatus=document.getElementById('mediumModelStatus'),
+highModelStatus=document.getElementById('highModelStatus'),
+persianModelStatus=document.getElementById('persianModelStatus'),
+modelDownloadTitle=document.getElementById('modelDownloadTitle'),
+modelDownloadDesc=document.getElementById('modelDownloadDesc'),
+modelPillTxt=document.getElementById('modelPillTxt'),
+outputMode=document.getElementById('outputMode'),
+countLabel=document.getElementById('countLabel'),
 copyBtn=document.getElementById('copyBtn');
 
-let selectedFile=null, srtFilename=null, audioURL=null;
-const ALLOWED=['mp3','wav','m4a','ogg','flac','webm','mp4','aac','wma'];
+let selectedFile=null, srtFilename=null, mediaURL=null, selectedModel='medium', downloadTarget='large-v3';
+const downloadWasActive={'large-v3':false,'persian':false};
+let latestModelsById={};
+const AUDIO_EXTS=['mp3','wav','m4a','ogg','oga','flac','aac','wma','opus','aif','aiff'];
+const VIDEO_EXTS=['mp4','m4v','mkv','mov','webm','avi','mpg','mpeg','m2ts','ts','3gp','flv'];
+const ALLOWED=[...AUDIO_EXTS,...VIDEO_EXTS];
 const faNum=n=>Number(n).toLocaleString('fa-IR');
-const fmtSize=b=>{if(b<1024)return b+' بایت';if(b<1048576)return( b/1024).toFixed(1)+' کیلوبایت';return(b/1048576).toFixed(1)+' مگابایت';};
+const fmtSize=b=>{if(b<1024)return b+' بایت';if(b<1048576)return(b/1024).toFixed(1)+' کیلوبایت';if(b<1073741824)return(b/1048576).toFixed(1)+' مگابایت';return(b/1073741824).toFixed(2)+' گیگابایت';};
 
 /* language tabs */
 langTabs.querySelectorAll('button').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();
   langTabs.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
   language.value=b.dataset.value;setStep(2);}));
+
+/* output mode tabs */
+modeTabs.querySelectorAll('button').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();
+  modeTabs.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  outputMode.value=b.dataset.value;
+  uploadBtnLabel.textContent=b.dataset.value==='word'?'ساخت زیرنویس کلمه به کلمه':'شروع تبدیل به SRT';
+  setStep(2);}));
+
+/* model selection + app-managed model downloads */
+const MODEL_NAMES={'medium':'Medium','large-v3':'High','persian':'Persian'};
+const DOWNLOADABLE_MODELS=['large-v3','persian'];
+const DOWNLOAD_COPY={
+  'large-v3':{
+    title:'مدل High نصب نیست',
+    desc:'برای بالاترین دقت عمومی، مدل High را دانلود کنید. دانلود توسط خود برنامه انجام می‌شود و فقط یک‌بار لازم است.'
+  },
+  'persian':{
+    title:'مدل Persian نصب نیست',
+    desc:'مدل مخصوص فارسی با نشانه‌گذاری و خروجی تمیز. دانلود توسط خود برنامه انجام می‌شود و فقط یک‌بار لازم است.'
+  }
+};
+function modelLabel(id){return MODEL_NAMES[id]||id;}
+function modelButton(id){return modelTabs.querySelector('button[data-model="'+id+'"]');}
+function pillText(id){
+  if(id==='persian')return 'Persian';
+  return 'Whisper '+(id==='large-v3'?'High':'Medium');
+}
+
+function setSelectedModel(id){
+  const btn=modelButton(id);
+  if(!btn||btn.classList.contains('locked'))return false;
+  modelTabs.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  btn.classList.add('on');selectedModel=id;
+  modelPillTxt.textContent=pillText(id);
+  return true;
+}
+
+function setDownloadCopy(id){
+  const copy=DOWNLOAD_COPY[id]||{title:'مدل نصب نیست',desc:''};
+  modelDownloadTitle.textContent=copy.title;
+  modelDownloadDesc.textContent=copy.desc;
+}
+
+modelTabs.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',e=>{
+  e.stopPropagation();
+  const id=btn.dataset.model;
+  if(btn.classList.contains('locked')){
+    downloadTarget=id;
+    setDownloadCopy(id);
+    if(latestModelsById[id])renderDownloadBox(id,latestModelsById[id]);
+    setStatus('مدل '+modelLabel(id)+' هنوز دانلود نشده است؛ اول از دکمه «دانلود '+modelLabel(id)+'» استفاده کنید','error');
+    modelDownloadBox.classList.add('show');
+    modelDownloadBox.scrollIntoView({behavior:'smooth',block:'center'});
+    loadModels();
+    return;
+  }
+  setSelectedModel(id);setStep(2);
+}));
+
+function updateModelTab(id,m){
+  const btn=modelButton(id);
+  if(!btn)return;
+  const statusEl=id==='persian'?persianModelStatus:highModelStatus;
+  const busy=m.state==='downloading'||m.state==='verifying';
+  if(m.installed){
+    btn.classList.remove('locked');
+    statusEl.textContent='نصب‌شده • '+(id==='persian'?'خروجی تمیز و نشانه‌گذاری‌شده':'دقیق‌ترین خروجی');
+    return;
+  }
+
+  btn.classList.add('locked');
+  if(selectedModel===id)setSelectedModel('medium');
+  statusEl.textContent=busy
+    ? (m.state==='verifying'?'در حال بررسی فایل…':'در حال دانلود • '+faNum(Math.floor(m.percent))+'٪')
+    : (m.downloaded>0
+      ? 'دانلود ناقص • '+fmtSize(m.downloaded)+' از '+fmtSize(m.size)
+      : 'دانلود نشده • '+fmtSize(m.size));
+}
+
+function renderDownloadBox(id,m){
+  setDownloadCopy(id);
+  modelDownloadBox.classList.add('show');
+  modelProgressFill.style.width=(m.percent||0)+'%';
+  modelProgressPct.textContent=faNum(Math.floor(m.percent||0))+'٪';
+
+  const busy=m.state==='downloading'||m.state==='verifying';
+  if(busy){
+    modelDownloadBox.classList.remove('error');
+    downloadModelBtn.disabled=true;
+    downloadModelBtn.textContent='در حال دانلود…';
+    modelProgressWrap.classList.add('show');
+    modelProgressLabel.textContent=m.state==='verifying'
+      ? 'در حال بررسی صحت فایل…'
+      : 'در حال دانلود مدل '+modelLabel(id)+'…';
+    modelProgressDetail.textContent=fmtSize(m.downloaded)+' از '+fmtSize(m.size);
+    return;
+  }
+
+  downloadModelBtn.disabled=false;
+  if(m.state==='error'){
+    modelDownloadBox.classList.add('error');
+    modelProgressWrap.classList.add('show');
+    downloadModelBtn.textContent='↻ تلاش دوباره';
+    modelProgressLabel.textContent='دانلود ناموفق';
+    modelProgressDetail.textContent=m.error||'خطای شبکه — دوباره تلاش کنید';
+  }else{
+    modelDownloadBox.classList.remove('error');
+    modelProgressWrap.classList.remove('show');
+    const label=modelLabel(id);
+    downloadModelBtn.textContent=m.downloaded>0
+      ? '⬇ ادامه دانلود '+label
+      : '⬇ دانلود '+label;
+  }
+}
+
+function chooseDownloadTarget(byId){
+  const current=byId[downloadTarget];
+  if(current&&!current.installed)return downloadTarget;
+  for(const id of DOWNLOADABLE_MODELS){
+    const m=byId[id];
+    if(m&&(m.state==='downloading'||m.state==='verifying'))return id;
+  }
+  for(const id of DOWNLOADABLE_MODELS){
+    const m=byId[id];
+    if(m&&!m.installed)return id;
+  }
+  return null;
+}
+
+function applyModelsPayload(data){
+  const models=Array.isArray(data.models)?data.models:[];
+  const byId={};models.forEach(m=>byId[m.id]=m);
+  latestModelsById=byId;
+
+  if(byId['medium']){
+    const m=byId['medium'];
+    const busy=m.state==='downloading'||m.state==='verifying';
+    mediumModelStatus.textContent=m.installed
+      ? 'نصب‌شده • سریع و متعادل'
+      : busy
+        ? (m.state==='verifying'?'در حال بررسی فایل…':'در حال دانلود • '+faNum(Math.floor(m.percent))+'٪')
+        : 'نصب نشده • '+fmtSize(m.size);
+  }
+
+  DOWNLOADABLE_MODELS.forEach(id=>{
+    const m=byId[id];
+    const btn=modelButton(id);
+    if(!m){
+      if(btn)btn.style.display='none';
+      return;
+    }
+    updateModelTab(id,m);
+
+    if(m.installed&&downloadWasActive[id]){
+      downloadWasActive[id]=false;
+      setSelectedModel(id);
+      setStatus('✓ مدل '+modelLabel(id)+' با موفقیت دانلود شد و آماده استفاده است','success');
+    }else if(m.state==='downloading'||m.state==='verifying'){
+      downloadWasActive[id]=true;
+    }else if(m.state==='error'&&downloadWasActive[id]){
+      downloadWasActive[id]=false;
+      setStatus('✕ دانلود مدل '+modelLabel(id)+' ناموفق بود','error');
+    }
+  });
+
+  const target=chooseDownloadTarget(byId);
+  if(!target){
+    modelDownloadBox.classList.remove('show','error');
+    return;
+  }
+  downloadTarget=target;
+  renderDownloadBox(target,byId[target]);
+}
+
+async function loadModels(){
+  try{
+    const r=await fetch('/models',{cache:'no-store'});
+    if(!r.ok)return;
+    applyModelsPayload(await r.json());
+  }catch{}
+}
+loadModels();setInterval(loadModels,2500);
+
+downloadModelBtn.addEventListener('click',async()=>{
+  const id=downloadTarget;
+  downloadModelBtn.disabled=true;
+  downloadModelBtn.textContent='در حال شروع…';
+  try{
+    const res=await fetch('/models/download',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model_id:id})
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'خطا در شروع دانلود');
+    downloadWasActive[id]=true;
+    applyModelsPayload(data);
+    setStatus('دانلود مدل '+modelLabel(id)+' شروع شد — می‌توانید همین‌جا منتظر بمانید','');
+  }catch(err){
+    downloadModelBtn.disabled=false;
+    downloadModelBtn.textContent='↻ تلاش دوباره';
+    modelDownloadBox.classList.add('show','error');
+    modelProgressWrap.classList.add('show');
+    modelProgressLabel.textContent='خطا در شروع دانلود';
+    modelProgressDetail.textContent=err.message||'';
+    setStatus('✕ '+(err.message||'خطا در شروع دانلود'),'error');
+  }
+});
 
 /* steps */
 function setStep(n){[1,2,3].forEach(i=>{const el=document.getElementById('step'+i);el.classList.remove('active','done');
@@ -422,24 +761,47 @@ uploadZone.addEventListener('click',()=>fileInput.click());
 uploadZone.addEventListener('drop',e=>{if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0]);});
 fileInput.addEventListener('change',e=>{if(e.target.files.length)handleFile(e.target.files[0]);});
 
+function clearMediaPreview(){
+  if(mediaURL){URL.revokeObjectURL(mediaURL);mediaURL=null;}
+  audioPrev.pause();audioPrev.removeAttribute('src');audioPrev.load();
+  videoPrev.pause();videoPrev.removeAttribute('src');videoPrev.load();
+}
+
 function handleFile(file){
   const ext=(file.name.split('.').pop()||'').toLowerCase();
   if(!ALLOWED.includes(ext)){setStatus('فرمت فایل پشتیبانی نمی‌شود: '+ext,'error');return;}
+  const isVideo=VIDEO_EXTS.includes(ext);
   selectedFile=file;
   fileName.textContent=file.name;
   fileNameLabel.textContent=file.name;
-  fileSizeLabel.textContent=fmtSize(file.size)+' • '+ext.toUpperCase();
+  fileSizeLabel.textContent=fmtSize(file.size)+' • '+ext.toUpperCase()+(isVideo?' • ویدیو':' • صوتی');
+  fileAvatar.classList.toggle('video',isVideo);
+  audioIcon.classList.toggle('hidden',isVideo);
+  videoIcon.classList.toggle('hidden',!isVideo);
   fileCard.classList.add('show');
-  if(audioURL)URL.revokeObjectURL(audioURL);
-  audioURL=URL.createObjectURL(file);
-  audioPrev.src=audioURL;
+  clearMediaPreview();
+  mediaURL=URL.createObjectURL(file);
+  if(isVideo){
+    videoPrev.src=mediaURL;
+    videoPrev.classList.remove('hidden');
+    audioPrev.classList.add('hidden');
+    eq.classList.add('hidden');
+  }else{
+    audioPrev.src=mediaURL;
+    audioPrev.classList.remove('hidden');
+    videoPrev.classList.add('hidden');
+    eq.classList.remove('hidden');
+    eq.classList.add('paused');
+  }
   uploadBtn.disabled=false;
   resetResult(false);
   setStep(2);
-  setStatus('فایل آماده است — روی «شروع تبدیل» بزنید','');
+  setStatus(isVideo
+    ? 'فایل ویدیویی آماده است — صدا خودکار استخراج می‌شود؛ روی «شروع تبدیل» بزنید'
+    : 'فایل صوتی آماده است — روی «شروع تبدیل» بزنید','');
 }
 document.getElementById('removeFile').addEventListener('click',e=>{e.stopPropagation();
-  selectedFile=null;fileInput.value='';fileCard.classList.remove('show');audioPrev.src='';uploadBtn.disabled=true;
+  selectedFile=null;fileInput.value='';fileCard.classList.remove('show');clearMediaPreview();uploadBtn.disabled=true;
   fileName.textContent='';setStatus('','');setStep(1);});
 audioPrev.addEventListener('play',()=>eq.classList.remove('paused'));
 audioPrev.addEventListener('pause',()=>eq.classList.add('paused'));
@@ -449,6 +811,8 @@ function resetResult(clearStatus=true){
   resultInfo.classList.remove('show');
   termBox.classList.remove('show');
   downloadBtn.classList.remove('show');
+  downloadSegmentBtn.classList.remove('show');
+  downloadSegmentBtn.onclick=null;
   emptyState.style.display='';
   if(clearStatus){status.textContent='';status.className='';}
 }
@@ -466,25 +830,43 @@ async function pollHealth(){
     const r=await fetch('/health',{cache:'no-store'});
     if(!r.ok)throw 0;
     const h=await r.json();
-    if(h.model_loaded){serverPillTxt.textContent='سرور آنلاین • مدل آماده';}
+    if(h.model_loaded){
+      const m=h.active_model==='large-v3'?'High':h.active_model==='persian'?'Persian':h.active_model==='medium'?'Medium':(h.active_model||'');
+      serverPillTxt.textContent='سرور آنلاین • مدل '+m+' آماده';
+    }
     else if(h.model_error){serverPillTxt.textContent='خطا در بارگذاری مدل';}
     else{serverPillTxt.textContent='سرور آنلاین • در حال بارگذاری مدل…';}
   }catch{serverPillTxt.textContent='عدم اتصال به سرور';}
 }
 pollHealth();setInterval(pollHealth,5000);
 
-const PHASES=['در حال آپلود فایل…','در حال تشخیص زبان…','در حال رونویسی گفتار…','در حال ساخت فایل SRT…'];
+function phasesFor(modelId,mode){
+  const m=modelLabel(modelId);
+  if(mode==='word'){
+    return ['در حال آپلود فایل…',`در حال آماده‌سازی مدل ${m}…`,`در حال رونویسی و همگام‌سازی کلمات با ${m}…`,'در حال ساخت SRT کلمه‌به‌کلمه…'];
+  }
+  return ['در حال آپلود فایل…',`در حال آماده‌سازی مدل ${m}…`,`در حال رونویسی گفتار با ${m}…`,'در حال ساخت فایل SRT…'];
+}
+
+function downloadUrl(filename,displayName){
+  let url='/download/'+encodeURIComponent(filename);
+  if(displayName)url+='?name='+encodeURIComponent(displayName);
+  return url;
+}
 
 uploadBtn.addEventListener('click',async()=>{
   if(!selectedFile)return;
+  const phases=phasesFor(selectedModel,outputMode.value);
   const formData=new FormData();
   formData.append('file',selectedFile);
   formData.append('language',language.value);
+  formData.append('output_mode',outputMode.value);
+  formData.append('model',selectedModel);
   uploadBtn.disabled=true;
   progressWrap.classList.add('show');
   progressFill.style.width='0%';progPct.textContent='۰٪';
   resetResult();emptyState.style.display='none';
-  setStatus(PHASES[0],'');setStep(3);
+  setStatus(phases[0],'');setStep(3);
 
   let progress=0,phase=0;
   const iv=setInterval(()=>{
@@ -492,8 +874,8 @@ uploadBtn.addEventListener('click',async()=>{
       if(progress>92)progress=92;
       progressFill.style.width=progress+'%';
       progPct.textContent=faNum(Math.floor(progress))+'٪';
-      const np=Math.min(Math.floor(progress/24),PHASES.length-1);
-      if(np!==phase){phase=np;progLabel.textContent=PHASES[phase];setStatus(PHASES[phase],'');}
+      const np=Math.min(Math.floor(progress/24),phases.length-1);
+      if(np!==phase){phase=np;progLabel.textContent=phases[phase];setStatus(phases[phase],'');}
     }},450);
 
   try{
@@ -502,17 +884,31 @@ uploadBtn.addEventListener('click',async()=>{
     progressFill.style.width='100%';progPct.textContent='۱۰۰٪';
     const data=await res.json();
     if(data.success){
+      const isWord=data.mode==='word';
       srtFilename=data.srt_filename;
-      setStatus('✓ تبدیل با موفقیت انجام شد!','success');
+      setStatus((isWord?'✓ زیرنویس کلمه به کلمه آماده شد!':'✓ تبدیل با موفقیت انجام شد!')+' • مدل '+modelLabel(data.model||selectedModel),'success');
       progLabel.textContent='تکمیل شد';
       document.getElementById('detectedLang').textContent=data.detected_language==='fa'?'فارسی':data.detected_language==='en'?'English':data.detected_language;
-      document.getElementById('segmentsCount').textContent=faNum(data.segments_count);
+      if(isWord){
+        countLabel.textContent='تعداد کلمات';
+        document.getElementById('segmentsCount').textContent=faNum(data.words_count||0);
+        downloadLabel.textContent='دانلود SRT کلمه به کلمه';
+      }else{
+        countLabel.textContent='تعداد بخش‌ها';
+        document.getElementById('segmentsCount').textContent=faNum(data.segments_count||0);
+        downloadLabel.textContent='دانلود فایل SRT';
+      }
       resultInfo.classList.add('show');
+      previewFilename.textContent=data.original_filename||'subtitle.srt';
       previewText.textContent=data.preview+(data.preview&&data.preview.length>=1000?'\n…':'');
       termBox.classList.add('show');
       emptyState.style.display='none';
       downloadBtn.classList.add('show');
-      downloadBtn.onclick=()=>{window.location.href='/download/'+data.srt_filename;};
+      downloadBtn.onclick=()=>{window.location.href=downloadUrl(data.srt_filename,data.original_filename);};
+      if(data.segment_srt_filename){
+        downloadSegmentBtn.classList.add('show');
+        downloadSegmentBtn.onclick=()=>{window.location.href=downloadUrl(data.segment_srt_filename,data.segment_original_filename);};
+      }
       setStep(3);document.getElementById('step3').classList.add('done');
     }else{
       setStatus('✕ '+(data.error||'خطا در پردازش'),'error');
